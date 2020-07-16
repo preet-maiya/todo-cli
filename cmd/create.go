@@ -58,7 +58,9 @@ func create(*cobra.Command, []string) {
 		content = string(contentBytes)
 	}
 
-	if err := db.AddNote(content, endDateCreate, 0); err != nil {
+	parsedEndDateCreate := helpers.ParseDateOption(endDateCreate)
+
+	if err := db.AddNote(content, parsedEndDateCreate, 0); err != nil {
 		log.Errorf("Error adding note: %v", err)
 		return
 	}
@@ -79,11 +81,12 @@ to quickly create a Cobra application.`,
 
 func notes(*cobra.Command, []string) {
 	db := database.NewDB(config.DBFile)
-	// 	createdStartDate := time.Parse("2006-01-02", createdStartDateStr)
-	// 	createdEndDate := time.Parse("2006-01-02", createdEndDateStr)
-	// 	startDate := time.Parse("2006-01-02", startDateStr)
-	// 	endDate := time.Parse("2006-01-02", endDateStr)
-	notes, err := db.GetNotes(createdStartDateStr, createdEndDateStr, startDateStr, endDateStr)
+	parsedCreatedStartDate := helpers.ParseDateOption(createdStartDateStr)
+	parsedCreatedEndDate := helpers.ParseDateOption(createdEndDateStr)
+	parsedStartDate := helpers.ParseDateOption(startDateStr)
+	parsedEndDate := helpers.ParseDateOption(endDateStr)
+
+	notes, err := db.GetNotes(parsedCreatedStartDate, parsedCreatedEndDate, parsedStartDate, parsedEndDate)
 	if err != nil {
 		log.Errorf("Error fetching notes: %v", err)
 		return
