@@ -39,13 +39,10 @@ var content string
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Create notes quickly",
+	Long: `Create notes with expected end date with your favourite editor or
+	directly from the command line. To use editor, set EDITOR env variable to
+	the executable of the editor. emacs or vim, I'm not judging!`,
 	Run: create,
 }
 
@@ -71,13 +68,10 @@ func create(*cobra.Command, []string) {
 // createCmd represents the create command
 var notesCmd = &cobra.Command{
 	Use:   "notes",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "List all notes with details",
+	Long: `List all the notes created from the beginning of the time!
+	Control what to show with flags, like whether to show the created date
+	It is not shown by default but passing flag -c will show it`,
 	Run: notes,
 }
 
@@ -137,15 +131,6 @@ func init() {
 	rootCmd.AddCommand(notesCmd)
 	notesCmd.AddCommand(createCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// createCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// createCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	beginning := time.Time{}.Format("2006-01-02")
 	veryFarFuture := time.Now().AddDate(1000, 0, 0).Format("2006-01-02")
 	notesCmd.Flags().StringVarP(&endDateStr, "end-date-before", "B", veryFarFuture, "End date for the note")
