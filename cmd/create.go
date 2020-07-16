@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/preet-maiya/todo/cmd/helpers"
 	"github.com/preet-maiya/todo/database"
 	log "github.com/sirupsen/logrus"
@@ -29,6 +30,7 @@ var createdEndDateStr string
 var createdStartDateStr string
 var endDateStr string
 var startDateStr string
+var showCreated bool
 var endDateCreate string
 var content string
 
@@ -88,7 +90,13 @@ func notes(*cobra.Command, []string) {
 	}
 
 	for i, note := range notes {
-		fmt.Printf("%d: %s\nCreated At: %s\nEnd Date: %s\n\n", i, note.Content, note.CreatedAt, note.EndDate)
+		fmt.Printf("%d: ", i)
+		color.Cyan("%s\n", note.Content)
+		fmt.Printf("End Date: %s\n", note.EndDate)
+		if showCreated {
+			fmt.Printf("Created At: %s\n", note.CreatedAt)
+		}
+		fmt.Printf("\n")
 	}
 
 }
@@ -108,10 +116,11 @@ func init() {
 	// createCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	beginning := time.Time{}.Format("2006-01-02")
 	veryFarFuture := time.Now().AddDate(1000, 0, 0).Format("2006-01-02")
-	notesCmd.Flags().StringVarP(&endDateStr, "end-date-before", "", veryFarFuture, "End date for the note")
-	notesCmd.Flags().StringVarP(&startDateStr, "end-date-after", "", beginning, "End date for the note")
+	notesCmd.Flags().StringVarP(&endDateStr, "end-date-before", "B", veryFarFuture, "End date for the note")
+	notesCmd.Flags().StringVarP(&startDateStr, "end-date-after", "A", beginning, "End date for the note")
 	notesCmd.Flags().StringVarP(&createdEndDateStr, "created-before", "", veryFarFuture, "End date for the note")
 	notesCmd.Flags().StringVarP(&createdStartDateStr, "created-after", "", beginning, "End date for the note")
+	notesCmd.Flags().BoolVarP(&showCreated, "show-created", "c", false, "Show created at time for notes")
 	createCmd.Flags().StringVarP(&content, "content", "m", "", "Content of the note")
-	createCmd.Flags().StringVarP(&endDateCreate, "end-date", "", "", "End date for the note")
+	createCmd.Flags().StringVarP(&endDateCreate, "end-date", "e", "", "End date for the note")
 }

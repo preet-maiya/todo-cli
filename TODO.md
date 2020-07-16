@@ -13,9 +13,12 @@
    > Note: Add group option
 
 4. List notes (created_at filter, end_date filter, list group names)
+   > Note: Add group option
 
 5. Delete note (by id?)
 
 6. Delete group (by name)
 
 7. Update note (by id). Check if $EDITOR can be used
+
+8. Add status and priority
