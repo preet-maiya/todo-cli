@@ -13,6 +13,7 @@ type Note struct {
 	Content   string
 	CreatedAt string
 	EndDate   string
+	Status    string
 	Group     string
 }
 
@@ -56,7 +57,7 @@ func (db *DB) AddNote(content string, endDate string, groupID int) error {
 
 func (db *DB) GetNotes(createdStartDate, createdEndDate, endStartDate, endEndDate string) ([]Note, error) {
 	getNotesStmt := `
-		SELECT notes.id, notes.content, notes.created_at, notes.end_date, groups.group_name from notes
+		SELECT notes.id, notes.content, notes.created_at, notes.end_date, notes.status, groups.group_name from notes
 		left join groups on notes.group_id=groups.id
 		where (created_at>=? and created_at<?
 		and end_date>=? and end_date<?)
@@ -83,8 +84,9 @@ func (db *DB) GetNotes(createdStartDate, createdEndDate, endStartDate, endEndDat
 		var content string
 		var createdAt string
 		var endDateSQL sql.NullString
+		var status string
 		var groupNameSQL sql.NullString
-		if err = rows.Scan(&id, &content, &createdAt, &endDateSQL, &groupNameSQL); err != nil {
+		if err = rows.Scan(&id, &content, &createdAt, &endDateSQL, &status, &groupNameSQL); err != nil {
 			log.Errorf("Error reading value: %v", err)
 			return []Note{}, err
 		}
@@ -103,6 +105,7 @@ func (db *DB) GetNotes(createdStartDate, createdEndDate, endStartDate, endEndDat
 			Content:   content,
 			CreatedAt: createdAt,
 			EndDate:   endDate,
+			Status:    status,
 			Group:     groupName,
 		})
 	}

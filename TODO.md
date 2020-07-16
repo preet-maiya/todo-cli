@@ -19,6 +19,7 @@
 
 6. Delete group (by name)
 
-7. Update note (by id). Check if $EDITOR can be used
+7. Update note (by id). <del>Check if $EDITOR can be used
 
 8. Add status and priority
+   > Note: Add functionality to change them

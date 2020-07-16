@@ -20,6 +20,7 @@ func (db *DB) InitDB() error {
 			updated_at TEXT,
 			deleted_at TEXT,
 			group_id INTEGER,
+			status TEXT NOT NULL DEFAULT "CREATED",
 			FOREIGN KEY(group_id) REFERENCES groups(id)
 		);
 	`

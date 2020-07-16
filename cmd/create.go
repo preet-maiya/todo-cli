@@ -17,10 +17,12 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/fatih/color"
 	"github.com/preet-maiya/todo/cmd/helpers"
+	"github.com/preet-maiya/todo/configuration"
 	"github.com/preet-maiya/todo/database"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -93,8 +95,35 @@ func notes(*cobra.Command, []string) {
 	}
 
 	for i, note := range notes {
+		// TODO: Refactor this block!
+
+		endDateParsed, err := time.Parse("2006-01-02", note.EndDate)
+		if err != nil {
+			log.Errorf("Cannot parse %s: %v", note.EndDate, err)
+			return
+		}
+
+		if note.Status != configuration.Done && time.Now().After(endDateParsed) {
+			note.Status = configuration.Expired
+		}
+
 		fmt.Printf("%d: ", i)
+
 		color.Cyan("%s\n", note.Content)
+		statusColor := color.New(color.FgWhite).SprintFunc()
+		switch note.Status {
+		case configuration.Created:
+			statusColor = color.New(color.FgWhite).SprintFunc()
+		case configuration.Pending:
+			statusColor = color.New(color.FgYellow).SprintFunc()
+		case configuration.Done:
+			statusColor = color.New(color.FgGreen).SprintFunc()
+		case configuration.Expired:
+			statusColor = color.New(color.FgRed).SprintFunc()
+		default:
+			statusColor = color.New(color.FgWhite).SprintFunc()
+		}
+		fmt.Printf("Status: %s\n", statusColor(strings.ToTitle(note.Status)))
 		fmt.Printf("End Date: %s\n", note.EndDate)
 		if showCreated {
 			fmt.Printf("Created At: %s\n", note.CreatedAt)
