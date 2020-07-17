@@ -23,3 +23,5 @@
 
 8. Add status and priority
    > Note: Add functionality to change them
+
+9. Fix having spaces with executable. Stupid windows
