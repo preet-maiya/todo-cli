@@ -127,3 +127,28 @@ func (db *DB) GetNotes(createdStartDate, createdEndDate, endStartDate, endEndDat
 	}
 	return notes, nil
 }
+
+func (db *DB) UpdateStatus(id int, status string) error {
+	tx, err := db.conn.Begin()
+	if err != nil {
+		log.Errorf("Error initializing transaction: %v", err)
+		return err
+	}
+
+	createNoteStmt := `
+		update notes set status=? where id=?;
+	`
+	stmt, err := tx.Prepare(createNoteStmt)
+	if err != nil {
+		log.Errorf("Error preparing statement: %v", err)
+		return err
+	}
+	defer stmt.Close()
+
+	if _, err = stmt.Exec(status, id); err != nil {
+		log.Errorf("Error updating status for id %d: %v", id, err)
+		return err
+	}
+	tx.Commit()
+	return nil
+}
