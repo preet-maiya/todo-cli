@@ -55,23 +55,39 @@ func (db *DB) AddNote(content string, endDate string, groupID int) error {
 	return nil
 }
 
-func (db *DB) GetNotes(createdStartDate, createdEndDate, endStartDate, endEndDate string) ([]Note, error) {
+func (db *DB) GetNotes(createdStartDate, createdEndDate, endStartDate, endEndDate string, pattern string, caseInsensitive bool) ([]Note, error) {
+	// TODO: Fix case sensitive flag
+	// caseSensitiveStmt := `PRAGMA case_sensitive_like = $1;`
+	// _, err := db.conn.Query(caseSensitiveStmt, 1)
+	// if err != nil {
+	// 	log.Errorf("Error setting case sensitive setting: %v", err)
+	// 	return []Note{}, err
+	// }
+
+	pattern = fmt.Sprintf("%%%s%%", pattern)
+
 	getNotesStmt := `
 		SELECT notes.id, notes.content, notes.created_at, notes.end_date, notes.status, groups.group_name from notes
 		left join groups on notes.group_id=groups.id
-		where (created_at>=? and created_at<?
-		and end_date>=? and end_date<?)
+		where (%s) and (%s);
 	`
+
+	timeFilters := `created_at>=? and created_at<?
+					and end_date>=? and end_date<? `
+
 	if createdStartDate == "0001-01-01" {
-		getNotesStmt = fmt.Sprintf("%s or created_at is null", getNotesStmt)
+		timeFilters = fmt.Sprintf("%s or created_at is null", timeFilters)
 	}
 	if endStartDate == "0001-01-01" {
-		getNotesStmt = fmt.Sprintf("%s or end_date is null", getNotesStmt)
+		timeFilters = fmt.Sprintf("%s or end_date is null", timeFilters)
 	}
 
-	getNotesStmt = fmt.Sprintf("%s;", getNotesStmt)
+	patternFilter := "content like ?"
 
-	rows, err := db.conn.Query(getNotesStmt, createdStartDate, createdEndDate, endStartDate, endEndDate)
+	getNotesStmt = fmt.Sprintf(getNotesStmt, timeFilters, patternFilter)
+
+	rows, err := db.conn.Query(getNotesStmt, createdStartDate, createdEndDate, endStartDate, endEndDate, pattern)
+
 	if err != nil {
 		log.Errorf("Error getting notes: %v", err)
 		return []Note{}, err

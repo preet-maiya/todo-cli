@@ -35,6 +35,7 @@ var startDateStr string
 var showCreated bool
 var endDateCreate string
 var content string
+var caseInsensitive bool
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
@@ -67,22 +68,29 @@ func create(*cobra.Command, []string) {
 
 // createCmd represents the create command
 var notesCmd = &cobra.Command{
-	Use:   "notes",
+	Use:   "notes [pattern]",
 	Short: "List all notes with details",
 	Long: `List all the notes created from the beginning of the time!
 	Control what to show with flags, like whether to show the created date
-	It is not shown by default but passing flag -c will show it`,
-	Run: notes,
+	It is not shown by default but passing flag -c will show it.
+	An optional pattern to search can also be given`,
+	Args: cobra.MaximumNArgs(1),
+	Run:  notes,
 }
 
-func notes(*cobra.Command, []string) {
+func notes(cobra *cobra.Command, args []string) {
 	db := database.NewDB(config.DBFile)
 	parsedCreatedStartDate := helpers.ParseDateOption(createdStartDateStr)
 	parsedCreatedEndDate := helpers.ParseDateOption(createdEndDateStr)
 	parsedStartDate := helpers.ParseDateOption(startDateStr)
 	parsedEndDate := helpers.ParseDateOption(endDateStr)
 
-	notes, err := db.GetNotes(parsedCreatedStartDate, parsedCreatedEndDate, parsedStartDate, parsedEndDate)
+	pattern := ""
+	if len(args) > 0 {
+		pattern = args[0]
+	}
+
+	notes, err := db.GetNotes(parsedCreatedStartDate, parsedCreatedEndDate, parsedStartDate, parsedEndDate, pattern, caseInsensitive)
 	if err != nil {
 		log.Errorf("Error fetching notes: %v", err)
 		return
@@ -138,6 +146,7 @@ func init() {
 	notesCmd.Flags().StringVarP(&createdEndDateStr, "created-before", "", veryFarFuture, "End date for the note")
 	notesCmd.Flags().StringVarP(&createdStartDateStr, "created-after", "", beginning, "End date for the note")
 	notesCmd.Flags().BoolVarP(&showCreated, "show-created", "c", false, "Show created at time for notes")
+	notesCmd.Flags().BoolVarP(&caseInsensitive, "", "i", false, "Search pattern case insensitive")
 	createCmd.Flags().StringVarP(&content, "content", "m", "", "Content of the note")
 	createCmd.Flags().StringVarP(&endDateCreate, "end-date", "e", "", "End date for the note")
 }
