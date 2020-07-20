@@ -34,11 +34,16 @@ This is a [Golang](https://golang.org/) app created by using [Cobra](https://git
     ```
   This would list all notes under the sun (Just kidding, only the ones created)
 
-  List notes by expected notes
+  List notes by expected date
     ```bash
     todo notes -A yesterday -B +15d
     ```
     This would get notes after yesterday and before 15 days
+
+    ```bash
+    todo notes -O Monday
+    ```
+    This would list all notes for coming Monday
 
   Get the created time too
     ```bash
@@ -52,6 +57,7 @@ This is a [Golang](https://golang.org/) app created by using [Cobra](https://git
     - `-3w`: Last 3 weeks
     - `1m`: Next month
     - `5y`: For 5 year plans!
+  - Days of week like `Monday` or `saturday`
 
 - For more options, run
     ```bash

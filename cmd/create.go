@@ -32,6 +32,7 @@ var createdEndDateStr string
 var createdStartDateStr string
 var endDateStr string
 var startDateStr string
+var onDate string
 var showCreated bool
 
 var endDateCreate string
@@ -61,6 +62,11 @@ func create(*cobra.Command, []string) {
 			return
 		}
 		content = string(contentBytes)
+	}
+
+	if content == "" {
+		log.Warning("Empty content given. Skipping...")
+		return
 	}
 
 	parsedEndDateCreate := helpers.ParseDateOption(endDateCreate)
@@ -93,6 +99,18 @@ func notes(cobra *cobra.Command, args []string) {
 	pattern := ""
 	if len(args) > 0 {
 		pattern = args[0]
+	}
+
+	if onDate != "" {
+		onDate = helpers.ParseDateOption(onDate)
+		parsedStartDate = onDate
+		endDate, err := time.Parse("2006-01-02", onDate)
+		if err != nil {
+			log.Errorf("Cannot parse onDate: %s, %v", onDate, err)
+			return
+		}
+		parsedEndDate = endDate.AddDate(0, 0, 1).Format("2006-01-02")
+
 	}
 
 	notes, err := db.GetNotes(parsedCreatedStartDate, parsedCreatedEndDate, parsedStartDate, parsedEndDate, pattern, caseInsensitive)
@@ -208,7 +226,9 @@ func init() {
 	notesCmd.Flags().StringVarP(&createdEndDateStr, "created-before", "", veryFarFuture, "End date for the note")
 	notesCmd.Flags().StringVarP(&createdStartDateStr, "created-after", "", beginning, "End date for the note")
 	notesCmd.Flags().BoolVarP(&showCreated, "show-created", "c", false, "Show created at time for notes")
+	notesCmd.Flags().StringVarP(&onDate, "on", "O", "", "On the date")
 	notesCmd.Flags().BoolVarP(&caseInsensitive, "", "i", false, "Search pattern case insensitive")
+
 	createCmd.Flags().StringVarP(&content, "content", "m", "", "Content of the note")
 	createCmd.Flags().StringVarP(&endDateCreate, "end-date", "e", "", "End date for the note")
 
