@@ -21,6 +21,7 @@ func (db *DB) InitDB() error {
 			deleted_at TEXT,
 			group_id INTEGER,
 			status TEXT NOT NULL DEFAULT "CREATED",
+			priority INTEGER DEFAULT 5,
 			FOREIGN KEY(group_id) REFERENCES groups(id)
 		);
 	`

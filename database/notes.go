@@ -86,6 +86,7 @@ func (db *DB) GetNotes(createdStartDate, createdEndDate, endStartDate, endEndDat
 
 	getNotesStmt = fmt.Sprintf(getNotesStmt, timeFilters, patternFilter)
 
+	println(db)
 	rows, err := db.conn.Query(getNotesStmt, createdStartDate, createdEndDate, endStartDate, endEndDate, pattern)
 
 	if err != nil {

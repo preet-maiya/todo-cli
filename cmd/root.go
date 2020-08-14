@@ -23,6 +23,7 @@ import (
 	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/preet-maiya/todo/cmd/handlers"
 	"github.com/preet-maiya/todo/configuration"
 	"github.com/spf13/viper"
 )
@@ -83,9 +84,10 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		log.Infof("Using config file:", viper.ConfigFileUsed())
 	}
 	if err := viper.Unmarshal(&config); err != nil {
 		log.Errorf("Error unmarshaling config: %v", err)
 	}
+	handlers.InitConfig(config)
 }
